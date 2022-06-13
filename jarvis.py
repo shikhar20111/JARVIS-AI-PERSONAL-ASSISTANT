@@ -1,12 +1,14 @@
 import pyttsx3
 import datetime
+import string
 import sys
 import speech_recognition as sr
 import wikipedia
+import pyautogui
+import operator
 import webbrowser as web
 import pywhatkit
 from pywikihow import search_wikihow
-import pyautogui
 import os
 import keyboard
 from googletrans import Translator
@@ -15,6 +17,10 @@ from bs4 import BeautifulSoup
 import pyjokes
 from PyDictionary import PyDictionary as Diction
 from playsound import playsound
+import psutil
+import speedtest
+from twilio.rest import Client
+import myAlarm
 
 
 engine = pyttsx3.init('sapi5')
@@ -146,7 +152,7 @@ def openApps():
     speak("ok sir,wait a second!")
     
 
-    if ' chrome' in query:
+    if 'chrome' in query:
         os.startfile("C:\Program Files\Google\Chrome\Application\chrome.exe")
 
     elif 'edge' in query:
@@ -161,7 +167,7 @@ def openApps():
     elif 'facebook' in query:
         web.open('https://www.facebook.com')
 
-    elif' instagram' in query:
+    elif 'instagram' in query:
         os.startfile('https://www.instagram.com')   
 
     elif 'map' in query:
@@ -179,10 +185,10 @@ def closeApps():
     if 'youtube' in query:
         os.system("TASKKILL /F /im msedge.exe")
 
-    elif'chrome' in query:
+    elif 'chrome' in query:
         os.system("TASKKILL /F /im chrome.exe")    
 
-    elif'code' in query:
+    elif 'code' in query:
         os.system("TASKKILL /F /im code.exe")
 
     elif'maps' in query:
@@ -200,7 +206,7 @@ def closeApps():
     elif'portal' in query:
         os.system("TASKKILL /F /im msedge.exe")    
     
-    speak("ok sir!")
+    speak("closing sir!")
 
 
 def youtubeAuto():
@@ -298,23 +304,23 @@ def Dict():
     
 
 def screenshot():
-    speak("ok sir , what should i name that file ")
-    path = takecommand()
-    path1name = path + ".png"
-    path1 = "E:\\shikhar\\screenshot1\\" + path1name
-    kk = pyautogui.screenshot()
-    kk.save(path1)
-    os.startfile("E:\\shikhar\\screenshot1") 
+    speak(" sir , what should i name that screenshot file ")
+    path = takecommand().lower()
+    speak("taking screenshot")
+    time.sleep(3)
+    img = pyautogui.screenshot()
+    img.save(f"{name}.png")
     speak("here is your screenshot sir!")
 
 
 def temp():
-    search ="temperature in a kanpur"
+    search ="temperature in kanpur"
     url = f"https://www.google.co.in/search?q={search}"
     r = requests.get(url)
     data = BeautifulSoup(r.text,"html.parser")
     temperature = data.find("div",class_ ="BNeawe").text
     speak(f"the temperature is {temperature}")
+
 
 
 wishMe() 
@@ -328,14 +334,16 @@ while True:
         if 'hello' in query:
          speak("hello sir , how are you")
 
+                       
+        elif 'I am good' in query:
+            speak("thats great sir")       
+            
+       
         elif 'introduce yourself' in query:
-            speak("hi i am jarvis i am an AI desktop assisstant program!")    
-               
-        elif 'I am good ' in query:
-            speak("thats great sir")
+            speak("hellow! ")
+            speak("I am jarvis")
+            speak("i am an AI desktop assisstant program")
 
-        elif 'who is raghav' in query:
-            speak("  raghav is master shikhar brother")
    
         elif 'wikipedia' in query:
          speak('searching wikipedia..')
@@ -362,12 +370,10 @@ while True:
         elif 'open hackerrank' in query:
           web.open("hackerrank.com")
 
-        elif 'the time' in query:
+        elif 'tell me time' in query or 'what is the time' in query or 'time' in query:
+         query =query.replace("jarvis", "")
          strTime = datetime.datetime.now().strftime("%H:%M:%S")
          speak(f"sir the time is {strTime}")
-
-        elif 'who is shobhit' in query:
-            speak("master shobhit is master shikhar brother")
 
         elif 'website' in query:
             speak("opening website sir!") 
@@ -395,8 +401,7 @@ while True:
 
 
         elif 'screenshot' in query:
-           kk= pyautogui.screenshot()
-           kk.save('D:\\screenshot')
+           screenshot()
 
 
         elif 'thank you' in query:
@@ -413,10 +418,10 @@ while True:
         elif 'open youtube' in query:
             openApps()
 
-        elif 'open maps' in hquery:
+        elif 'open maps' in query:
             openApps()             
           
-        elif ' open facebook' in query:
+        elif 'open facebook' in query:
             openApps()             
               
         elif 'open code' in query:
@@ -514,52 +519,145 @@ while True:
             Dict()
 
         elif 'alarm' in query:
-            speak("enter the time! ")
-            time = input(": Enter the time :")
-
-            while True:
-                time_Ac = datetime.datetime.now()
-                now = time_Ac.strftime("%H:%M:%S")
-
-                if now==time:
-                        speak("time to wake up sir!")
-                        playsound('avengerstheme')
-                        speak("alarm closed")
-
-                elif now>time:
-                    break        
-
+            speak("Sir! tell me the time to set alarm for example, set alarm to 10:30 AM! ")
+            tt = takecommand()
+            tt = tt.replace("set alarm to","")
+            tt = tt.replace(".", "")
+            tt = tt.upper()
+            myAlarm.alarm(tt)
+            
 
         elif 'temperature' in query:
             temp()
-
-
+                 
         elif 'translator' in query:
             trans()
 
-
-        elif ' how to' in query:
+        elif 'how to' in query:
             speak("getting information from internet sir")
             op = query.replace("jarvis", "")
             max_result = 1
             how_to_func[0].print()
             speak(how_to_func[0].summary)
 
-        elif 'screenshot' in query:
-            screenshot()
-
-
-        elif ' taarif karo' in query:
-         speak("tarif toh main kardunga phir nazar kaun utarega")
-
 
         elif 'you need a break' in query:
             speak("ok sir , you can call me anytime ")
-            speak("just say wakeup jarvis")
+            speak("just say wakeup jarvis and i will be online again")
             break
                                
-        elif ' keep quiet' in query:
+        elif 'keep quiet' in query:
             speak("ok sir! ")
+
+       
+        elif 'how much power left' in query or 'how much power we have' in query or 'battery' in query:
+            battery = psutil.sensors_battery()
+            percentage = battery.percent
+            speak(f"sir our system have {percentage} percent battery")
+
+        elif 'volume up' in query:
+            pyautogui.press("volumeup")  
+
+        elif 'volume down' in query:
+            pyautogui.press("volumedown")     
+    
+        elif 'volumemute' in query:
+            pyautogui.press("volumemute") 
+
+
+        elif 'send message' in query:
+            speak("sir what should i send")
+            msz = takecommand() 
+
+            account_sid = 'ACfe047316f88144570ecebffe98b5abb0'
+            auth_token = '497ae609d332448a81ca27e280b6dc85'
+
+
+            client = Client(account_sid, auth_token)
+
+            message = client.messages \
+              .create(
+                body= msz,
+                from_='+18039982306',
+                to='+919026016351'
+             )
+
+            print(message.sid)
+            speak(f"message sent sir!")          
+
+        elif 'make a phone call ' in query or 'call' in query:
+           speak("calling sir!")  
+           account_sid = 'ACfe047316f88144570ecebffe98b5abb0'
+           auth_token = '497ae609d332448a81ca27e280b6dc85'
+
+
+           client = Client(account_sid, auth_token)
+
+           message = client.calls \
+              .create(
+                twiml='<Response><Say>hellow sir! i am jarvis , this is a testing call...</Say></Response>',
+                from_='+18039982306',
+                to='+919026016351'
+             )
+           print(message.sid)
+
+
+        elif 'activate learning mod' in query:
+            speak("learning mode activated ")
+            speak("tell me what you want to learn about")
+            how = takecommand()
+            max_results = 1
+            how_to = search_wikihow(how, max_results)
+            assert len(how_to) == 1
+            how_to[0].print()
+            speak(how_to[0].summary)
+
+        elif 'calculate' in query or 'perform a calculation' in query or 'can you calculate' in query:
+            r =sr.Recognizer()
+            with sr.Microphone() as source:
+             speak("say , what you want to calculate , for example 3 plus 4")
+             print("Listening..")
+             r.adjust_for_ambient_noise(source)
+             audio =r.listen(source)
+             my_string = r.recognize_google(audio)
+            print(my_string)
+            def get_operator_fn(op):
+              return{
+                 '+' : operator.add,
+                 '-' : operator.sub,
+                 '*' : operator.mul,
+                 'divided' :operator.__truediv__,
+                 }[op]
+            def eval_binary_expr(op1, oper, op2):
+               op1,op2 = int(op1), int(op2)
+               return get_operator_fn(oper)(op1, op2)
+            speak("your result is")
+            speak(eval_binary_expr(*(my_string.split())))   
+
+
+        elif 'where am i' in query or 'tell me my location' in query:
+            speak("wait sir! let me check")
+            try:
+                ipAdd = requests.get('https://api.ipify.org').text
+                print(ipAdd)
+                url = 'https://get.geojs.io/v1/ip/geo/'+ipAdd+'.json'
+                geo_requests = requests.get(url)
+                geo_data = geo_requests.json()
+                city = geo_data['city']
+                country = geo_data['country']
+                speak(f"sir i am not sure, but i think we are in {city} city of {country} country")
+            except Exception as e:
+                speak("sorry sir, due to network issue i am not able to find where we are.")
+                pass
+
         
-                 
+        elif 'internet speed' in query or 'check internet' in query:
+            speak("checking internet speed")
+            st = speedtest.Speedtest()
+            dl = st.download()
+            up = st.upload()
+            speak(f"sir we have {dl} bit per second downloading speed and {up} bit per second uploading speed")
+
+
+
                   
